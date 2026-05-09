@@ -43,16 +43,17 @@
         16
       ],
       "id": "45f01db3-1ef5-4732-b25e-90fd68e41204",
-      "name": "HTTP Request: Call LLM API"
+      "name": "HTTP Request: Call LLM API",
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
-        "jsCode": "const raw = $input.first().json.candidates[0].content.parts[0].text;\nconst parsed = JSON.parse(raw);\n\nreturn [{\n  json: {\n    bullets: parsed.bullets,\n    cover_letter: parsed.cover_letter,\n    match_score: parsed.match_score,\n    reasoning: parsed.reasoning\n  }\n}];"
+        "jsCode": "let raw = $input.first().json.candidates[0].content.parts[0].text;\n\n// Strip markdown code fences if present\nraw = raw.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n\nconst parsed = JSON.parse(raw);\n\nreturn [{\n  json: {\n    bullets: parsed.bullets,\n    cover_letter: parsed.cover_letter,\n    match_score: parsed.match_score,\n    reasoning: parsed.reasoning\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        528,
+        736,
         16
       ],
       "id": "7a2d75c4-ae12-450a-9896-4b057f610aa3",
@@ -74,11 +75,40 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        736,
+        992,
         16
       ],
       "id": "9a9d0938-2c71-4d9d-89a6-eb97c3ad77f0",
       "name": "Respond to Webhook: Send to Frontend"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        688,
+        192
+      ],
+      "id": "5e7ed1eb-611e-4afc-b508-82d38f8313de",
+      "name": "Respond to Webhook: Send Error Response"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    error: true,\n    message: \"AI service is temporarily unavailable. Please try again.\",\n    match_score: 0,\n    bullets: [],\n    cover_letter: \"\",\n    reasoning: \"\"\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        112
+      ],
+      "id": "f23ff999-e70e-40d9-89b0-27a061e559c5",
+      "name": "Code in JavaScript: Format Error"
     }
   ],
   "pinData": {},
@@ -102,6 +132,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Code in JavaScript: Format Error",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -115,6 +152,17 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript: Format Error": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook: Send Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -122,8 +170,9 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "fb044afb-260c-4b33-b535-6662c46cea1d",
+  "versionId": "957bb376-ac01-4703-8b91-bcc06839def1",
   "meta": {
+    "templateCredsSetupCompleted": true,
     "instanceId": "b1b30a81faf775863322bc27573163b364e69f945bb9a157618208b732cee000"
   },
   "id": "wYlTY9ZVSNXb9okJ",

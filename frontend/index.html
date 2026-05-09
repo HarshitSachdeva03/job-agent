@@ -3,93 +3,143 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Job Agent</title>
+  <title>Job Application Agent</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg:        #0f172a;
+      --surface:   #1e293b;
+      --surface2:  #273548;
+      --border:    #334155;
+      --primary:   #6366f1;
+      --primary-h: #4f46e5;
+      --success:   #10b981;
+      --text:      #e2e8f0;
+      --muted:     #94a3b8;
+      --danger:    #f87171;
+      --radius:    12px;
+    }
+
     body {
+      background: var(--bg);
+      color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #f5f5f5;
-      color: #1a1a1a;
       min-height: 100vh;
-      padding: 40px 16px;
+      padding: 48px 16px 80px;
+      line-height: 1.6;
     }
 
-    .container {
-      max-width: 820px;
-      margin: 0 auto;
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
     }
 
-    header {
-      margin-bottom: 32px;
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 99px;
+      padding: 4px 14px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #a5b4fc;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
     }
 
-    header h1 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
+    .header-badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      background: #a5b4fc;
+      border-radius: 50%;
     }
 
-    header p {
-      margin-top: 6px;
-      color: #555;
-      font-size: 0.95rem;
+    .header h1 {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #e2e8f0 0%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
     }
+
+    .header p {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 900px; margin: 0 auto; }
 
     .card {
-      background: #fff;
-      border: 1px solid #e0e0e0;
-      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       padding: 28px;
-      margin-bottom: 24px;
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       margin-bottom: 20px;
     }
 
-    .card-header h2 {
-      font-size: 1rem;
-      font-weight: 600;
+    .card-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 16px;
     }
 
-    .field {
+    /* ── Input grid ── */
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
       margin-bottom: 20px;
     }
 
-    .field:last-child { margin-bottom: 0; }
+    @media (max-width: 640px) {
+      .input-grid { grid-template-columns: 1fr; }
+    }
 
-    label {
+    .field label {
       display: block;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: #444;
-      margin-bottom: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 8px;
+      letter-spacing: 0.03em;
     }
 
     textarea {
       width: 100%;
-      border: 1px solid #d0d0d0;
-      border-radius: 6px;
-      padding: 10px 12px;
-      font-size: 0.9rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.875rem;
       font-family: inherit;
-      color: #1a1a1a;
+      color: var(--text);
       resize: vertical;
-      line-height: 1.5;
-      transition: border-color 0.15s;
-      background: #fafafa;
+      line-height: 1.6;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
+
+    textarea::placeholder { color: #475569; }
 
     textarea:focus {
       outline: none;
-      border-color: #4f46e5;
-      background: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
     }
 
+    /* ── Buttons ── */
     .actions {
       display: flex;
       gap: 10px;
@@ -99,247 +149,419 @@
 
     button {
       cursor: pointer;
-      border: none;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      padding: 10px 20px;
-      transition: opacity 0.15s, background 0.15s;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 10px 22px;
+      transition: all 0.15s;
+      letter-spacing: 0.01em;
     }
 
-    button:hover { opacity: 0.88; }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
 
     #submitBtn {
-      background: #4f46e5;
+      background: var(--primary);
       color: #fff;
+      border: 1px solid transparent;
+    }
+
+    #submitBtn:not(:disabled):hover {
+      background: var(--primary-h);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(99,102,241,0.4);
     }
 
     #demoBtn {
-      background: #f0f0f0;
-      color: #333;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
     }
 
+    #demoBtn:hover {
+      border-color: var(--primary);
+      color: #a5b4fc;
+    }
+
+    /* ── Loading ── */
+    #loading {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .dots-wrap {
+      display: flex;
+      gap: 4px;
+    }
+
+    .dots-wrap span {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--primary);
+      animation: bounce 1.2s ease-in-out infinite;
+      opacity: 0.3;
+    }
+
+    .dots-wrap span:nth-child(2) { animation-delay: 0.15s; }
+    .dots-wrap span:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1); }
+    }
+
+    /* ── Spinner in button ── */
+    .spinner {
+      display: inline-block;
+      width: 13px;
+      height: 13px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      vertical-align: middle;
+      margin-right: 7px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Error ── */
     #error {
       display: none;
-      background: #fef2f2;
-      border: 1px solid #fca5a5;
-      color: #b91c1c;
-      border-radius: 6px;
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.25);
+      color: var(--danger);
+      border-radius: 8px;
       padding: 10px 14px;
-      font-size: 0.875rem;
+      font-size: 0.85rem;
       margin-top: 14px;
     }
 
-    #results { display: none; }
+    /* ── Results ── */
+    #results {
+      display: none;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
 
+    #results.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Score row */
     .score-row {
       display: flex;
       align-items: center;
-      gap: 14px;
-      margin-bottom: 24px;
+      gap: 28px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
     }
 
-    .score-badge {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #4f46e5;
+    .circle-wrap {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      flex-shrink: 0;
+    }
+
+    .circle-wrap svg {
+      transform: rotate(-90deg);
+    }
+
+    .circle-bg {
+      fill: none;
+      stroke: var(--surface2);
+      stroke-width: 8;
+    }
+
+    .circle-fill {
+      fill: none;
+      stroke: var(--primary);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 283;
+      stroke-dashoffset: 283;
+      transition: stroke-dashoffset 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .circle-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .circle-score {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text);
       line-height: 1;
     }
 
-    .score-label {
-      font-size: 0.85rem;
-      color: #555;
-    }
-
-    .score-bar-wrap {
-      flex: 1;
-      background: #ebebeb;
-      border-radius: 99px;
-      height: 8px;
-      overflow: hidden;
-    }
-
-    .score-bar {
-      height: 100%;
-      background: #4f46e5;
-      border-radius: 99px;
-      transition: width 0.6s ease;
-    }
-
-    .section-title {
-      font-size: 0.8rem;
+    .circle-label {
+      font-size: 0.65rem;
+      color: var(--muted);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: #888;
-      margin-bottom: 10px;
+      margin-top: 2px;
     }
 
-    #bulletsList {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 24px;
+    .score-meta {
+      flex: 1;
+      min-width: 180px;
     }
 
-    #bulletsList li {
-      display: flex;
-      gap: 10px;
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
-
-    #bulletsList li::before {
-      content: "▸";
-      color: #4f46e5;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    #coverLetter {
-      background: #f8f8f8;
-      border: 1px solid #e8e8e8;
-      border-radius: 6px;
-      padding: 16px;
-      font-size: 0.9rem;
-      line-height: 1.7;
-      white-space: pre-wrap;
-      color: #2a2a2a;
-      margin-bottom: 24px;
+    .score-meta h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text);
     }
 
     #reasoning {
       font-size: 0.875rem;
-      color: #555;
+      color: var(--muted);
       line-height: 1.6;
-      border-left: 3px solid #e0e0e0;
-      padding-left: 12px;
     }
 
-    .spinner {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(255,255,255,0.4);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      vertical-align: middle;
-      margin-right: 6px;
+    /* Section titles */
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    /* Bullets */
+    #bulletsList {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    #bulletsList li {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .bullet-num {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #a5b4fc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+
+    /* Cover letter */
+    .cover-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    #copyBtn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    #copyBtn:hover {
+      border-color: var(--primary);
+      color: #a5b4fc;
+    }
+
+    #copyBtn.copied {
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    #coverLetter {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+      font-size: 0.875rem;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      color: var(--text);
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>Job Agent</h1>
-      <p>Paste a job description and your resume to get a tailored analysis.</p>
+
+    <header class="header">
+      <div class="header-badge">AI Powered</div>
+      <h1>Job Application Agent</h1>
+      <p>AI-powered resume tailoring &amp; cover letter generation</p>
     </header>
 
     <div class="card">
-      <div class="card-header">
-        <h2>Input</h2>
-        <button id="demoBtn">Demo Mode</button>
-      </div>
+      <div class="card-label">Input</div>
 
-      <div class="field">
-        <label for="jobDesc">Job Description</label>
-        <textarea id="jobDesc" rows="8" placeholder="Paste the job description here..."></textarea>
-      </div>
-
-      <div class="field">
-        <label for="resume">Your Resume</label>
-        <textarea id="resume" rows="10" placeholder="Paste your resume here..."></textarea>
+      <div class="input-grid">
+        <div class="field">
+          <label for="jobDesc">Job Description</label>
+          <textarea id="jobDesc" rows="12" placeholder="Paste the job description here..."></textarea>
+        </div>
+        <div class="field">
+          <label for="resume">Your Resume</label>
+          <textarea id="resume" rows="12" placeholder="Paste your resume here..."></textarea>
+        </div>
       </div>
 
       <div class="actions">
         <button id="submitBtn">Analyze Match</button>
+        <button id="demoBtn">Try Demo</button>
+      </div>
+
+      <div id="loading">
+        <div class="dots-wrap">
+          <span></span><span></span><span></span>
+        </div>
+        Analyzing your application...
       </div>
 
       <div id="error"></div>
     </div>
 
-    <div class="card" id="results">
-      <div class="card-header">
-        <h2>Results</h2>
+    <div id="results">
+
+      <div class="card">
+        <div class="card-label">Match Score</div>
+        <div class="score-row">
+          <div class="circle-wrap">
+            <svg width="110" height="110" viewBox="0 0 110 110">
+              <circle class="circle-bg" cx="55" cy="55" r="45"/>
+              <circle class="circle-fill" id="circleFill" cx="55" cy="55" r="45"/>
+            </svg>
+            <div class="circle-text">
+              <span class="circle-score" id="scoreValue">0</span>
+              <span class="circle-label">/ 100</span>
+            </div>
+          </div>
+          <div class="score-meta">
+            <h3>Analysis Summary</h3>
+            <div id="reasoning"></div>
+          </div>
+        </div>
       </div>
 
-      <div class="score-row">
-        <div>
-          <div class="score-badge"><span id="scoreValue">0</span>%</div>
-          <div class="score-label">Match Score</div>
-        </div>
-        <div class="score-bar-wrap">
-          <div class="score-bar" id="scoreBar" style="width: 0%"></div>
-        </div>
+      <div class="card">
+        <div class="section-title">Tailored Resume Bullets</div>
+        <ul id="bulletsList"></ul>
       </div>
 
-      <div class="section-title">Tailored Bullets</div>
-      <ul id="bulletsList"></ul>
+      <div class="card">
+        <div class="cover-header">
+          <div class="section-title" style="margin-bottom:0;border:none;padding:0;">Cover Letter</div>
+          <button id="copyBtn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            Copy
+          </button>
+        </div>
+        <div id="coverLetter"></div>
+      </div>
 
-      <div class="section-title">Cover Letter</div>
-      <div id="coverLetter"></div>
-
-      <div class="section-title">Reasoning</div>
-      <div id="reasoning"></div>
     </div>
   </div>
 
   <script>
-    const DEMO_JD = `Senior Software Engineer — Backend (Python)
+    const DEMO_JD = `Backend Engineer — Python & FastAPI
 
-We are looking for a Senior Backend Engineer to join our platform team. You will design and build scalable APIs, improve system reliability, and mentor junior engineers.
+We are looking for a Backend Engineer with experience in Python, FastAPI, and building scalable APIs. Experience with async programming, PostgreSQL, and workflow automation tools is a plus. You will design microservices, integrate third-party APIs, and work in an agile team.
 
 Responsibilities:
-- Design and implement RESTful and gRPC APIs
-- Own backend services written in Python (FastAPI / Django)
-- Work closely with frontend and data teams
-- Participate in on-call rotation and incident response
-- Drive technical roadmap discussions
+- Design and implement RESTful microservices using Python and FastAPI
+- Integrate third-party APIs and workflow automation tools
+- Write efficient async code for I/O-bound and concurrent workloads
+- Collaborate with frontend and ML teams in an agile environment
+- Own service reliability, observability, and performance
 
 Requirements:
-- 4+ years of backend engineering experience
-- Strong proficiency in Python
-- Experience with PostgreSQL, Redis, and message queues (Kafka / RabbitMQ)
-- Familiarity with Docker and Kubernetes
-- Strong communication and collaboration skills`;
+- Strong proficiency in Python and FastAPI
+- Experience with async programming (asyncio, async/await)
+- Familiarity with PostgreSQL and connection pooling
+- Experience with workflow automation or orchestration tools
+- Solid understanding of REST API design and microservices`;
 
     const DEMO_RESUME = `Harshit Sachdeva
 harshitsachdeva03@gmail.com | github.com/harshitsachdeva03
 
 EXPERIENCE
 
-Backend Engineer — Acme Corp (2022–Present)
-- Built and maintained Python (FastAPI) microservices handling 50M+ requests/day
-- Reduced API p99 latency by 38% through query optimization and Redis caching
-- Led migration of monolith to containerized services on Kubernetes
-- Mentored 2 junior engineers; ran weekly code review sessions
-
-Software Engineer — Startup XYZ (2020–2022)
-- Developed Django REST APIs consumed by web and mobile clients
-- Designed PostgreSQL schemas and wrote complex analytical queries
-- Integrated Kafka for async event processing between services
+Backend Engineer — Samsung Research Bangalore (2024–Present)
+- Building a Text-to-SQL agentic platform using LangGraph and FastAPI, enabling natural language querying over structured enterprise data
+- Implemented asyncpg connection pooling and asyncio-based concurrency for parallel LLM calls, reducing end-to-end query latency by ~40%
+- Designed SSE streaming pipeline between FastAPI backend and React/Vite frontend for real-time agent output
+- Integrated Langfuse for LLM observability — tracking traces, token usage, and latency across agentic workflows
+- Built and versioned REST APIs consumed by internal product teams
 
 SKILLS
-Python, FastAPI, Django, PostgreSQL, Redis, Kafka, Docker, Kubernetes, REST, gRPC, Git
+Python, FastAPI, LangGraph, asyncio, asyncpg, PostgreSQL, SSE, React, Vite, Langfuse, REST APIs, LLM integration, Docker
 
 EDUCATION
-B.Tech Computer Science — Delhi Technological University, 2020`;
+B.Tech Electrical Engineering — IIT Delhi`;
 
     document.getElementById("demoBtn").addEventListener("click", () => {
       document.getElementById("jobDesc").value = DEMO_JD;
       document.getElementById("resume").value = DEMO_RESUME;
     });
 
+    document.getElementById("copyBtn").addEventListener("click", () => {
+      const text = document.getElementById("coverLetter").textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById("copyBtn");
+        btn.classList.add("copied");
+        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+        setTimeout(() => {
+          btn.classList.remove("copied");
+          btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy`;
+        }, 2000);
+      });
+    });
+
     document.getElementById("submitBtn").addEventListener("click", async () => {
       const jobDesc = document.getElementById("jobDesc").value.trim();
       const resume = document.getElementById("resume").value.trim();
       const errorEl = document.getElementById("error");
+      const loadingEl = document.getElementById("loading");
       const btn = document.getElementById("submitBtn");
+      const resultsEl = document.getElementById("results");
 
       errorEl.style.display = "none";
 
@@ -351,6 +573,9 @@ B.Tech Computer Science — Delhi Technological University, 2020`;
 
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span>Analyzing...';
+      loadingEl.style.display = "flex";
+      resultsEl.classList.remove("visible");
+      resultsEl.style.display = "none";
 
       try {
         const res = await fetch("http://localhost:5678/webhook/analyze", {
@@ -359,38 +584,48 @@ B.Tech Computer Science — Delhi Technological University, 2020`;
           body: JSON.stringify({ job_description: jobDesc, resume }),
         });
 
-        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        if (!res.ok) throw new Error("non-200");
 
         const data = await res.json();
         renderResults(data);
-      } catch (err) {
-        errorEl.textContent = err.message.includes("Failed to fetch")
-          ? "Could not reach the backend. Make sure it's running on http://localhost:8000."
-          : err.message;
+      } catch {
+        errorEl.textContent = "Something went wrong. Please try again.";
         errorEl.style.display = "block";
       } finally {
         btn.disabled = false;
         btn.textContent = "Analyze Match";
+        loadingEl.style.display = "none";
       }
     });
 
     function renderResults(data) {
+      // Score
       document.getElementById("scoreValue").textContent = data.match_score;
-      document.getElementById("scoreBar").style.width = data.match_score + "%";
+      const circumference = 2 * Math.PI * 45;
+      const offset = circumference - (data.match_score / 100) * circumference;
+      setTimeout(() => {
+        document.getElementById("circleFill").style.strokeDashoffset = offset;
+      }, 50);
 
+      // Bullets
       const list = document.getElementById("bulletsList");
       list.innerHTML = "";
-      data.bullets.forEach(b => {
+      data.bullets.forEach((b, i) => {
         const li = document.createElement("li");
-        li.textContent = b;
+        li.innerHTML = `<span class="bullet-num">${i + 1}</span><span>${b}</span>`;
         list.appendChild(li);
       });
 
+      // Cover letter & reasoning
       document.getElementById("coverLetter").textContent = data.cover_letter;
       document.getElementById("reasoning").textContent = data.reasoning;
 
+      // Fade in
       const resultsEl = document.getElementById("results");
       resultsEl.style.display = "block";
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => resultsEl.classList.add("visible"));
+      });
       resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   </script>

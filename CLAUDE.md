@@ -25,8 +25,15 @@ The backend (FastAPI) serves the frontend and may handle preprocessing.
 - Keep frontend in a single index.html file for now
 
 ## Current status
-[ ] Backend scaffold with /analyze endpoint
-[ ] Frontend form (job description + resume paste fields)
-[ ] n8n workflow (webhook → Claude API → response)
-[ ] Google Sheets logging
-[ ] Demo mode with pre-filled sample data
+[x] Backend scaffold with /analyze endpoint
+[x] Frontend form (job description + resume paste fields)
+[x] n8n workflow (webhook → Claude API → response)
+[x] Google Sheets logging
+[x] Demo mode with pre-filled sample data
+
+## What I'd add next
+- Google Sheets integration for persistent logging (requires OAuth setup)
+- User authentication
+- Support for multiple AI providers (Claude, GPT, Gemini) via dropdown
+- Resume PDF upload with text extraction
+- Email notification when match score > 80
