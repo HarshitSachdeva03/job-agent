@@ -353,7 +353,7 @@ B.Tech Computer Science — Delhi Technological University, 2020`;
       btn.innerHTML = '<span class="spinner"></span>Analyzing...';
 
       try {
-        const res = await fetch("http://localhost:8000/analyze", {
+        const res = await fetch("http://localhost:5678/webhook/analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ job_description: jobDesc, resume }),

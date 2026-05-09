@@ -1,0 +1,131 @@
+{
+  "name": "Job Application Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "analyze",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        112,
+        16
+      ],
+      "id": "27b2e558-a652-4fa7-9a46-42670484b3d7",
+      "name": "Webhook: Receive Application ",
+      "webhookId": "79cc01cc-fcb0-4fda-8302-0a6b5de0d747"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=YOUR_GEMINI_API_KEY",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": {{ JSON.stringify(\"You are a job application assistant. Given this job description and resume, return a JSON object with: bullets (array of 3 tailored resume bullet points), cover_letter (short 3-sentence cover letter), match_score (0-100 integer), reasoning (one sentence).\\n\\nJob Description:\\n\" + $json.body.job_description + \"\\n\\nResume:\\n\" + $json.body.resume + \"\\n\\nReturn only valid JSON, no markdown, no code fences.\") }}\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.7\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        320,
+        16
+      ],
+      "id": "45f01db3-1ef5-4732-b25e-90fd68e41204",
+      "name": "HTTP Request: Call LLM API"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.candidates[0].content.parts[0].text;\nconst parsed = JSON.parse(raw);\n\nreturn [{\n  json: {\n    bullets: parsed.bullets,\n    cover_letter: parsed.cover_letter,\n    match_score: parsed.match_score,\n    reasoning: parsed.reasoning\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        16
+      ],
+      "id": "7a2d75c4-ae12-450a-9896-4b057f610aa3",
+      "name": "Code in JavaScript: Parse Response"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        736,
+        16
+      ],
+      "id": "9a9d0938-2c71-4d9d-89a6-eb97c3ad77f0",
+      "name": "Respond to Webhook: Send to Frontend"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook: Receive Application ": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request: Call LLM API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request: Call LLM API": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript: Parse Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript: Parse Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook: Send to Frontend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "fb044afb-260c-4b33-b535-6662c46cea1d",
+  "meta": {
+    "instanceId": "b1b30a81faf775863322bc27573163b364e69f945bb9a157618208b732cee000"
+  },
+  "id": "wYlTY9ZVSNXb9okJ",
+  "tags": []
+}

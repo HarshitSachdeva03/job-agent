@@ -41,6 +41,9 @@ node_modules/
 dist/
 .nuxt/
 
+# n8n generated workflow (contains real API key — never commit)
+n8n/*.ready.json
+
 # Coverage / test artifacts
 .coverage
 htmlcov/
