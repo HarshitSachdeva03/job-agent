@@ -48,3 +48,7 @@ n8n/*.ready.json
 .coverage
 htmlcov/
 .pytest_cache/
+
+# Claude Code — local-only settings (machine-specific, not for sharing)
+.claude/settings.local.json
+.claude/agent-memory/
