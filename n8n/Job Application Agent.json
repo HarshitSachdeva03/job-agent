@@ -57,7 +57,8 @@
         16
       ],
       "id": "7a2d75c4-ae12-450a-9896-4b057f610aa3",
-      "name": "Code in JavaScript: Parse Response"
+      "name": "Code in JavaScript: Parse Response",
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -109,6 +110,100 @@
       ],
       "id": "f23ff999-e70e-40d9-89b0-27a061e559c5",
       "name": "Code in JavaScript: Format Error"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1a2b3c4d-1111-2222-3333-444455556666",
+              "leftValue": "={{ $json.match_score }}",
+              "rightValue": 75,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1200,
+        250
+      ],
+      "id": "b2c3d4e5-aaaa-bbbb-cccc-ddddeeeeffff",
+      "name": "IF: High Match Score"
+    },
+    {
+      "parameters": {
+        "resource": "contact",
+        "operation": "create",
+        "email": "={{ $('Webhook: Receive Application ').item.json.body?.email || \"candidate@example.com\" }}",
+        "additionalFields": {
+          "name": "={{ $('Webhook: Receive Application ').item.json.body?.name || \"Candidate\" }}",
+          "tags": "high-match,ai-screened"
+        }
+      },
+      "type": "n8n-nodes-base.highLevel",
+      "typeVersion": 1,
+      "position": [
+        1450,
+        250
+      ],
+      "id": "c3d4e5f6-1111-2222-3333-44445555aaaa",
+      "name": "HighLevel: Create Contact",
+      "onError": "continueRegularOutput",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "opportunity",
+        "operation": "create",
+        "pipelineName": "Job Applications",
+        "stageName": "High Match",
+        "contactId": "={{ $json.id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.highLevel",
+      "typeVersion": 1,
+      "position": [
+        1700,
+        250
+      ],
+      "id": "d4e5f6a7-2222-3333-4444-5555aaaa6666",
+      "name": "HighLevel: Create Opportunity",
+      "onError": "continueRegularOutput",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "task",
+        "operation": "create",
+        "title": "Follow up - high match candidate",
+        "contactId": "={{ $('HighLevel: Create Contact').item.json.id }}",
+        "additionalFields": {
+          "dueDate": "={{ new Date(Date.now() + 2*86400000).toISOString() }}"
+        }
+      },
+      "type": "n8n-nodes-base.highLevel",
+      "typeVersion": 1,
+      "position": [
+        1950,
+        250
+      ],
+      "id": "e5f6a7b8-3333-4444-5555-6666aaaa7777",
+      "name": "HighLevel: Create Task",
+      "onError": "continueRegularOutput",
+      "disabled": true
     }
   ],
   "pinData": {},
@@ -149,6 +244,18 @@
             "node": "Respond to Webhook: Send to Frontend",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "IF: High Match Score",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript: Format Error",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -163,6 +270,40 @@
           }
         ]
       ]
+    },
+    "IF: High Match Score": {
+      "main": [
+        [
+          {
+            "node": "HighLevel: Create Contact",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "HighLevel: Create Contact": {
+      "main": [
+        [
+          {
+            "node": "HighLevel: Create Opportunity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HighLevel: Create Opportunity": {
+      "main": [
+        [
+          {
+            "node": "HighLevel: Create Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -170,7 +311,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "957bb376-ac01-4703-8b91-bcc06839def1",
+  "versionId": "a8c01dfe-2222-4444-9999-bcc06839def2",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b1b30a81faf775863322bc27573163b364e69f945bb9a157618208b732cee000"
